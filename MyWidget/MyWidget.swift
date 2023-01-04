@@ -69,14 +69,63 @@ func getJson(completion: @escaping ([JsonData]) -> ()) {
 // DESIGN - VIEW
 struct vista: View {
     let entry : Provider.Entry
+    @Environment(\.widgetFamily) var family
     
+    @ViewBuilder
     var body: some View {
-        // Widgets don't support List() so we have to iterate and add Text()
-        VStack (alignment: .leading) {
-            Text("My List").font(.title).bold()
-            ForEach (entry.widgetData, id:\.id) { item in
-                Text(item.name).bold()
-                Text(item.email)
+        switch family {
+        case .systemSmall:
+            VStack(alignment: .center) {
+                Text("My List")
+                    .font(.largeTitle)
+                    .foregroundColor(.white)
+                    .bold()
+                    .frame(maxWidth: .infinity) // to expand the background from left to right side
+                    .background(Color.blue)
+                Spacer()
+                Text(String(entry.widgetData.count))
+                    .font(.custom("Arial", size: 80))
+                    .bold()
+                Spacer()
+            }
+        case .systemMedium:
+            VStack(alignment: .center) {
+                Text("My List")
+                    .font(.largeTitle)
+                    .foregroundColor(.white)
+                    .bold()
+                    .frame(maxWidth: .infinity) // to expand the background from left to right side
+                    .background(Color.blue)
+                Spacer()
+                VStack(alignment: .leading) {
+                    if (entry.widgetData.isEmpty) {
+                        ProgressView()
+                    } else {
+                        Text(entry.widgetData[0].name).bold()
+                        Text(entry.widgetData[0].email)
+                        Text(entry.widgetData[1].name).bold()
+                        Text(entry.widgetData[1].email)
+                    }
+                }.padding(.leading)
+                Spacer()
+            }
+        default:
+            // Large
+            VStack(alignment: .center) {
+                Text("My List")
+                    .font(.largeTitle)
+                    .foregroundColor(.white)
+                    .bold()
+                    .frame(maxWidth: .infinity) // to expand the background from left to right side
+                    .background(Color.blue)
+                Spacer()
+                VStack(alignment: .leading) {
+                    ForEach(entry.widgetData, id:\.id) { item in
+                        Text(item.name).bold()
+                        Text(item.email)
+                    }
+                }.padding(.leading)
+                Spacer()
             }
         }
     }
@@ -91,8 +140,7 @@ struct HelloWidget : Widget {
             
         }.description("descripcion del widget")
             .configurationDisplayName("nombre widget")
-            //.supportedFamilies([.systemLarge, .systemMedium, .systemSmall])
-            .supportedFamilies([.systemLarge])
+            .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
     }
 }
 
